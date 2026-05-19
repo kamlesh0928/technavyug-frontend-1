@@ -29,147 +29,154 @@ export default function Settings() {
   return (
     <div
       style={{
-        flex: 1,
-        background: "#c8d8ea",
         minHeight: "100vh",
-        width: "100%",
-        overflowX: "hidden",
-        padding: "clamp(12px, 3vw, 24px)",
-        boxSizing: "border-box",
+        background: "#fff",
+        padding: "14px",
       }}
     >
-      {/* Heading */}
       <div
         style={{
-          marginBottom: "clamp(16px, 3vw, 22px)",
-          paddingLeft: "4px",
-        }}
-      >
-        <h1
-          style={{
-            margin: 0,
-            fontSize: "clamp(28px, 4vw, 30px)",
-            fontWeight: "700",
-            color: "#1e293b",
-          }}
-        >
-          Settings
-        </h1>
-
-        <p
-          style={{
-            marginTop: "8px",
-            fontSize: "clamp(14px, 2vw, 18px)",
-            color: "#64748b",
-            fontWeight: "500",
-          }}
-        >
-          Manage all platform settings
-        </p>
-      </div>
-
-      {/* Main White Container */}
-      <div
-        style={{
-          background: "#f8fafc",
-          borderRadius: "clamp(18px, 3vw, 28px)",
-          padding: "clamp(14px, 3vw, 22px)",
+          background: "#c8d8e8",
+          borderRadius: "28px",
+          minHeight: "calc(100vh - 28px)",
+          padding: "20px",
           width: "100%",
           boxSizing: "border-box",
         }}
       >
+        {/* Heading */}
         <div
           style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "clamp(14px, 2vw, 20px)",
+            marginBottom: "22px",
+            paddingLeft: "4px",
           }}
         >
-          {settingsCards.map((item, index) => (
-            <div
-              key={index}
-              onClick={() => navigate(item.path)}
-              style={{
-                background: "#ffffff",
-                borderRadius: "clamp(16px, 2vw, 22px)",
-                padding: "clamp(16px, 3vw, 24px)",
-                cursor: "pointer",
-                border: "1px solid #e2e8f0",
-                transition: "0.3s ease",
-                width: "100%",
-                overflow: "hidden",
-                boxSizing: "border-box",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-2px)";
-                e.currentTarget.style.boxShadow =
-                  "0 10px 25px rgba(0,0,0,0.06)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0px)";
-                e.currentTarget.style.boxShadow = "none";
-              }}
-            >
+          <h1
+            style={{
+              margin: 0,
+              fontSize: "28px",
+              fontWeight: "700",
+              color: "#1e293b",
+            }}
+          >
+            Settings
+          </h1>
+
+          <p
+            style={{
+              marginTop: "8px",
+              fontSize: "15px",
+              color: "#64748b",
+              fontWeight: "500",
+            }}
+          >
+            Manage all platform settings
+          </p>
+        </div>
+
+        {/* Main White Container */}
+        <div
+          style={{
+            background: "#f8fafc",
+            borderRadius: "clamp(18px, 3vw, 28px)",
+            padding: "clamp(14px, 3vw, 22px)",
+            width: "100%",
+            boxSizing: "border-box",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "clamp(14px, 2vw, 20px)",
+            }}
+          >
+            {settingsCards.map((item, index) => (
               <div
+                key={index}
+                onClick={() => navigate(item.path)}
                 style={{
-                  display: "flex",
-                  alignItems: "flex-start",
-                  gap: "clamp(12px, 2vw, 18px)",
-                  flexWrap: "wrap",
+                  background: "#ffffff",
+                  borderRadius: "clamp(16px, 2vw, 22px)",
+                  padding: "clamp(16px, 3vw, 24px)",
+                  cursor: "pointer",
+                  border: "1px solid #e2e8f0",
+                  transition: "0.3s ease",
+                  width: "100%",
+                  overflow: "hidden",
+                  boxSizing: "border-box",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "translateY(-2px)";
+                  e.currentTarget.style.boxShadow =
+                    "0 10px 25px rgba(0,0,0,0.06)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "translateY(0px)";
+                  e.currentTarget.style.boxShadow = "none";
                 }}
               >
-                {/* Icon */}
                 <div
                   style={{
-                    width: "clamp(46px, 6vw, 58px)",
-                    height: "clamp(46px, 6vw, 58px)",
-                    minWidth: "clamp(46px, 6vw, 58px)",
-                    borderRadius: "clamp(12px, 2vw, 16px)",
-                    background: "#e0e7ff",
                     display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "#4f46e5",
+                    alignItems: "flex-start",
+                    gap: "clamp(12px, 2vw, 18px)",
+                    flexWrap: "wrap",
                   }}
                 >
-                  {item.icon}
-                </div>
-
-                {/* Content */}
-                <div
-                  style={{
-                    flex: 1,
-                    minWidth: "min(220px, 100%)",
-                  }}
-                >
-                  <h2
+                  {/* Icon */}
+                  <div
                     style={{
-                      margin: 0,
-                      fontSize: "clamp(16px, 2vw, 20px)",
-                      fontWeight: "700",
-                      color: "#0f172a",
-                      marginBottom: "10px",
-                      lineHeight: "clamp(24px, 3vw, 34px)",
+                      width: "clamp(46px, 6vw, 58px)",
+                      height: "clamp(46px, 6vw, 58px)",
+                      minWidth: "clamp(46px, 6vw, 58px)",
+                      borderRadius: "clamp(12px, 2vw, 16px)",
+                      background: "#e0e7ff",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "#4f46e5",
                     }}
                   >
-                    {item.title}
-                  </h2>
+                    {item.icon}
+                  </div>
 
-                  <p
+                  {/* Content */}
+                  <div
                     style={{
-                      margin: 0,
-                      color: "#64748b",
-                      fontSize: "clamp(13px, 1.8vw, 18px)",
-                      lineHeight: "clamp(22px, 3vw, 30px)",
-                      wordBreak: "break-word",
+                      flex: 1,
+                      minWidth: "min(220px, 100%)",
                     }}
                   >
-                    {item.description}
-                  </p>
+                    <h2
+                      style={{
+                        margin: 0,
+                        fontSize: "clamp(16px, 2vw, 20px)",
+                        fontWeight: "700",
+                        color: "#0f172a",
+                        marginBottom: "10px",
+                        lineHeight: "clamp(24px, 3vw, 34px)",
+                      }}
+                    >
+                      {item.title}
+                    </h2>
+
+                    <p
+                      style={{
+                        margin: 0,
+                        color: "#64748b",
+                        fontSize: "clamp(13px, 1.8vw, 18px)",
+                        lineHeight: "clamp(22px, 3vw, 30px)",
+                        wordBreak: "break-word",
+                      }}
+                    >
+                      {item.description}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>
