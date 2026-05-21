@@ -47,6 +47,9 @@ import Termsconditions from "./pages/admin/settings/TermsConditions";
 import Privacypolicy from "./pages/admin/settings/PrivacyPolicy";
 import AuditLogs from "./pages/admin/settings/AuditLogs";
 
+import Activity from "./pages/admin/Activity";
+import Analytics from "./pages/admin/Analytics";
+
 import CursorGlow from "./components/CursorGlow";
 import { Toaster } from "react-hot-toast";
 
@@ -116,6 +119,8 @@ function App() {
                 >
                   <Route path="dashboard" element={<Dashboard />} />
                   <Route path="profile" element={<AdminProfile />} />
+                  <Route path="activity" element={<Activity />} />
+                  <Route path="analytics" element={<Analytics />} />
 
                   <Route path="users" element={<Users />} />
                   <Route path="add-user" element={<AddUser />} />

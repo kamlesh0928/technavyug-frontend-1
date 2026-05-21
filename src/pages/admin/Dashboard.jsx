@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Users, Award, LayoutGrid, Trophy } from "lucide-react";
 import { fetchDashboard } from "../../services/api";
+import { Link } from "react-router-dom";
 
 import {
   ResponsiveContainer,
@@ -285,16 +286,18 @@ export default function AdminDashboard() {
               System Overview
             </h2>
 
-            <span
+            <Link
+              to="/admin/analytics"
               style={{
                 color: "#10b981",
                 fontSize: "13px",
                 fontWeight: "600",
                 cursor: "pointer",
+                textDecoration: "none",
               }}
             >
               View details
-            </span>
+            </Link>
           </div>
 
           {overview.map((item) => (
@@ -465,16 +468,18 @@ export default function AdminDashboard() {
               Recent Uploads
             </h2>
 
-            <span
+            <Link
+              to="/admin/activity"
               style={{
                 color: "#10b981",
                 fontSize: "13px",
                 fontWeight: "600",
                 cursor: "pointer",
+                textDecoration: "none",
               }}
             >
               View all
-            </span>
+            </Link>
           </div>
 
           {recentUploads.map((item, i) => (

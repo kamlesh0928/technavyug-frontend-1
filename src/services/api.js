@@ -111,3 +111,11 @@ export const fetchDashboard = () =>
 // ─── AUDIT LOGS ─────────────────────────────────────────────
 export const fetchAuditLogs = (search = '') =>
   fetch(`${API_BASE}/audit-logs${search ? `?search=${search}` : ''}`, { headers: headers() }).then(handleRes);
+
+// ─── ACTIVITY ───────────────────────────────────────────────
+export const fetchActivity = (page = 1, limit = 10) =>
+  fetch(`${API_BASE}/activity?page=${page}&limit=${limit}`, { headers: headers() }).then(handleRes);
+
+// ─── ANALYTICS ──────────────────────────────────────────────
+export const fetchAnalytics = () =>
+  fetch(`${API_BASE}/analytics`, { headers: headers() }).then(handleRes);
