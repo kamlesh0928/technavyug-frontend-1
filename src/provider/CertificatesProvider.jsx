@@ -25,7 +25,7 @@ const CertificatesProvider = ({ children }) => {
     }
   }, []);
 
-  useEffect(() => { loadCertificates(); }, [loadCertificates]);
+  // useEffect removed to prevent global fetch on mount
 
   const addCertificate = async (certificate) => {
     try {

@@ -22,27 +22,66 @@ export default function AdminDashboard() {
     totalCertificates: 0,
     totalAchievements: 0,
   });
+
   const [loading, setLoading] = useState(true);
+
+  const [recentUploads, setRecentUploads] = useState([]);
+  const [overview, setOverview] = useState([]);
 
   useEffect(() => {
     const load = async () => {
       setLoading(true);
+
       try {
         const res = await fetchDashboard();
+
         if (res.data?.cards) setStats(res.data.cards);
-      } catch { /* ignore */ }
-      finally {
+
+        if (res.data?.recentUploads) setRecentUploads(res.data.recentUploads);
+
+        if (res.data?.overview) setOverview(res.data.overview);
+      } catch {
+        /* ignore */
+      } finally {
         setLoading(false);
       }
     };
+
     load();
   }, []);
 
   const statCards = [
-    { label: "Total Users", value: String(stats?.totalUsers || 0), gradient: "linear-gradient(135deg, rgba(76,175,80,0.75), rgba(102,187,106,0.75))", icon: <Users size={20} color="#fff" /> },
-    { label: "Total Projects", value: String(stats?.totalProjects || 0), gradient: "linear-gradient(135deg, rgba(255,167,38,0.75), rgba(251,140,0,0.75))", icon: <LayoutGrid size={20} color="#fff" /> },
-    { label: "Total Certificates", value: String(stats?.totalCertificates || 0), gradient: "linear-gradient(135deg, rgba(239,83,80,0.75), rgba(229,57,53,0.75))", icon: <Award size={20} color="#fff" /> },
-    { label: "Total Achievements", value: String(stats?.totalAchievements || 0), gradient: "linear-gradient(135deg, rgba(66,165,245,0.75), rgba(30,136,229,0.75))", icon: <Trophy size={20} color="#fff" /> },
+    {
+      label: "Total Users",
+      value: String(stats?.totalUsers || 0),
+      gradient:
+        "linear-gradient(135deg, rgba(76,175,80,0.75), rgba(102,187,106,0.75))",
+      icon: <Users size={20} color="#fff" />,
+    },
+
+    {
+      label: "Total Projects",
+      value: String(stats?.totalProjects || 0),
+      gradient:
+        "linear-gradient(135deg, rgba(255,167,38,0.75), rgba(251,140,0,0.75))",
+      icon: <LayoutGrid size={20} color="#fff" />,
+    },
+
+    {
+      label: "Total Certificates",
+      value: String(stats?.totalCertificates || 0),
+      gradient:
+        "linear-gradient(135deg, rgba(239,83,80,0.75), rgba(229,57,53,0.75))",
+      icon: <Award size={20} color="#fff" />,
+    },
+
+    {
+      label: "Total Achievements",
+      value: String(stats?.totalAchievements || 0),
+      gradient:
+        "linear-gradient(135deg, rgba(66,165,245,0.75), rgba(30,136,229,0.75))",
+      icon: <Trophy size={20} color="#fff" />,
+    },
   ];
 
   const analyticsData = [
@@ -52,12 +91,6 @@ export default function AdminDashboard() {
     { name: "Achievements", value: stats?.totalAchievements || 0 },
   ];
 
-  const recentUploads = [
-    { text: "New user registered", time: "Recently", icon: <Users size={16} color="#6b7280" /> },
-    { text: "Certificate generated", time: "Recently", icon: <Award size={16} color="#6b7280" /> },
-    { text: "Project uploaded", time: "Recently", icon: <LayoutGrid size={16} color="#6b7280" /> },
-    { text: "Achievement added", time: "Recently", icon: <Trophy size={16} color="#6b7280" /> },
-  ];
   if (loading) {
     return (
       <div
@@ -67,12 +100,34 @@ export default function AdminDashboard() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "linear-gradient(135deg, #c8d8e8 0%, #d8cce8 50%, #b8ccd8 100%)",
+          background:
+            "linear-gradient(135deg, #c8d8e8 0%, #d8cce8 50%, #b8ccd8 100%)",
         }}
       >
         <div style={{ textAlign: "center" }}>
-          <div style={{ display: "inline-block", width: "40px", height: "40px", border: "4px solid #ccc", borderTopColor: "#4f46e5", borderRadius: "50%", animation: "spin 1s linear infinite" }}></div>
-          <p style={{ marginTop: "16px", color: "#1a1a2e", fontWeight: "600", fontSize: "16px" }}>Loading Dashboard Analytics...</p>
+          <div
+            style={{
+              display: "inline-block",
+              width: "40px",
+              height: "40px",
+              border: "4px solid #ccc",
+              borderTopColor: "#4f46e5",
+              borderRadius: "50%",
+              animation: "spin 1s linear infinite",
+            }}
+          ></div>
+
+          <p
+            style={{
+              marginTop: "16px",
+              color: "#1a1a2e",
+              fontWeight: "600",
+              fontSize: "16px",
+            }}
+          >
+            Loading Dashboard Analytics...
+          </p>
+
           <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         </div>
       </div>
@@ -242,23 +297,7 @@ export default function AdminDashboard() {
             </span>
           </div>
 
-          {[
-            {
-              label: "Users Active",
-              value: 75,
-              color: "#8b5cf6",
-            },
-            {
-              label: "Projects Done",
-              value: 60,
-              color: "#34d399",
-            },
-            {
-              label: "Certificates Issued",
-              value: 40,
-              color: "#f472b6",
-            },
-          ].map((item) => (
+          {overview.map((item) => (
             <div
               key={item.label}
               style={{
@@ -483,7 +522,7 @@ export default function AdminDashboard() {
                     color: "#9ca3af",
                   }}
                 >
-                  {item.time}
+                  {new Date(item.time).toLocaleString()}
                 </div>
               </div>
             </div>
@@ -511,23 +550,7 @@ export default function AdminDashboard() {
             Quick Stats
           </h2>
 
-          {[
-            {
-              label: "Active Users",
-              value: "75%",
-              color: "#8b5cf6",
-            },
-            {
-              label: "Completed Projects",
-              value: "60%",
-              color: "#34d399",
-            },
-            {
-              label: "Certificates Issued",
-              value: "40%",
-              color: "#f472b6",
-            },
-          ].map((item) => (
+          {overview.map((item) => (
             <div
               key={item.label}
               style={{
@@ -558,7 +581,7 @@ export default function AdminDashboard() {
                     color: "#111827",
                   }}
                 >
-                  {item.value}
+                  {item.value}%
                 </span>
               </div>
 
@@ -571,7 +594,7 @@ export default function AdminDashboard() {
               >
                 <div
                   style={{
-                    width: item.value,
+                    width: `${item.value}%`,
                     height: "100%",
                     background: item.color,
                     borderRadius: "999px",

@@ -6,7 +6,13 @@ import { Eye, Trash2, Download, Copy } from "lucide-react";
 import useCertificates from "../../../context/useCertificates";
 
 const Certificates = () => {
-  const { certificates, loading, deleteCertificate } = useCertificates();
+  const { certificates, loading, deleteCertificate, loadCertificates } = useCertificates();
+
+  useEffect(() => {
+    if (loadCertificates) {
+      loadCertificates();
+    }
+  }, [loadCertificates]);
 
   const [openMenuId, setOpenMenuId] = useState(null);
 
