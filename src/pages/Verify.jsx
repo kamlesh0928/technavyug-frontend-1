@@ -10,6 +10,7 @@ export default function Verify() {
     return urlParams.get("id") || "";
   });
   const [result, setResult] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const [scanOpen, setScanOpen] = useState(false);
 
@@ -24,6 +25,7 @@ export default function Verify() {
     try {
       const res = await verifyCertificateApi(id);
       if (res.data?.valid) {
+        window.history.replaceState(null, "", `?id=${id}`);
         setResult({
           valid: true,
           name: res.data.certificate?.user?.fullName || "N/A",
@@ -75,29 +77,63 @@ export default function Verify() {
     }
   }, [scanOpen]);
 
+  // PREVIEW BLOB
+  useEffect(() => {
+    let objectUrl = null;
+
+    const fetchPreview = async () => {
+      if (!result?.certificateUrl) {
+        setPreviewUrl(null);
+        return;
+      }
+      const url = result.certificateUrl.toLowerCase();
+      if (url.includes(".pdf") || url.includes("/certificates/")) {
+        try {
+          const res = await fetch(result.certificateUrl);
+          const rawBlob = await res.blob();
+          const pdfBlob = new Blob([rawBlob], { type: "application/pdf" });
+          objectUrl = window.URL.createObjectURL(pdfBlob);
+          setPreviewUrl(objectUrl);
+        } catch (e) {
+          console.error("Failed to load preview blob:", e);
+        }
+      } else {
+        setPreviewUrl(result.certificateUrl);
+      }
+    };
+
+    fetchPreview();
+
+    return () => {
+      if (objectUrl) {
+        window.URL.revokeObjectURL(objectUrl);
+      }
+    };
+  }, [result?.certificateUrl]);
+
   // DOWNLOAD
   const handleDownload = async () => {
     if (!result?.certificateUrl) return;
 
-    let extension = "jpg";
-    try {
-      const urlObj = new URL(result.certificateUrl);
-      const pathname = urlObj.pathname;
-      const ext = pathname.split(".").pop()?.toLowerCase();
-      if (ext && ["jpg", "jpeg", "png", "pdf"].includes(ext)) {
-        extension = ext;
-      }
-    } catch (e) {
-      if (result.certificateUrl.toLowerCase().endsWith(".pdf") || result.certificateUrl.toLowerCase().includes(".pdf")) {
-        extension = "pdf";
-      } else if (result.certificateUrl.toLowerCase().endsWith(".png")) {
-        extension = "png";
-      }
-    }
-
     try {
       const response = await fetch(result.certificateUrl);
       const blob = await response.blob();
+      
+      let extension = "jpg";
+      if (blob.type === "application/pdf") {
+        extension = "pdf";
+      } else if (blob.type === "image/png") {
+        extension = "png";
+      } else if (blob.type === "image/jpeg" || blob.type === "image/jpg") {
+        extension = "jpg";
+      } else {
+        if (result.certificateUrl.toLowerCase().includes("/certificates/") || result.certificateUrl.toLowerCase().includes(".pdf")) {
+          extension = "pdf";
+        } else if (result.certificateUrl.toLowerCase().includes(".png")) {
+          extension = "png";
+        }
+      }
+
       const blobUrl = window.URL.createObjectURL(blob);
 
       const link = document.createElement("a");
@@ -230,15 +266,21 @@ export default function Verify() {
                       Certificate Preview
                     </p>
 
-                    {result.certificateUrl?.toLowerCase().includes(".pdf") ? (
-                      <iframe
-                        src={result.certificateUrl}
-                        title="certificate"
-                        className="rounded-lg shadow-sm w-full h-[400px] border border-gray-200 bg-white"
-                      />
+                    {result.certificateUrl?.toLowerCase().includes(".pdf") || result.certificateUrl?.toLowerCase().includes("/certificates/") ? (
+                      previewUrl ? (
+                        <iframe
+                          src={previewUrl}
+                          title="certificate"
+                          className="rounded-lg shadow-sm w-full h-[400px] border border-gray-200 bg-white"
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center w-full h-[400px] bg-white border border-gray-200 rounded-lg shadow-sm">
+                          <p className="text-gray-400 text-sm animate-pulse">Loading preview...</p>
+                        </div>
+                      )
                     ) : (
                       <img
-                        src={result.certificateUrl}
+                        src={previewUrl || result.certificateUrl}
                         alt="certificate"
                         className="rounded-lg shadow-sm"
                       />
