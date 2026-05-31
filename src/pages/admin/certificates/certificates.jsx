@@ -65,45 +65,44 @@ const Certificates = () => {
       toast.error("No certificate file available to download");
       return;
     }
+    console.log("[handleDownload] Initiating download trace for file:", file);
     try {
+      console.log("[handleDownload] Attempting fetch(file)...");
       const response = await fetch(file);
+      console.log("[handleDownload] Fetch completed. Status:", response.status);
+      console.log("[handleDownload] Content-Type Header:", response.headers.get("content-type"));
 
       const blob = await response.blob();
+      console.log("[handleDownload] Blob resolved. Size:", blob.size, "Type:", blob.type);
 
       const url = window.URL.createObjectURL(blob);
-
       const link = document.createElement("a");
-
       link.href = url;
 
       let extension = "jpg";
-      try {
-        const urlObj = new URL(file);
-        const pathname = urlObj.pathname;
-        const ext = pathname.split(".").pop()?.toLowerCase();
-        if (ext && ["jpg", "jpeg", "png", "pdf"].includes(ext)) {
-          extension = ext;
-        }
-      } catch (e) {
-        if (file.toLowerCase().endsWith(".pdf") || file.toLowerCase().includes(".pdf")) {
+      if (blob.type === "application/pdf") {
+        extension = "pdf";
+      } else if (blob.type === "image/png") {
+        extension = "png";
+      } else if (blob.type === "image/jpeg" || blob.type === "image/jpg") {
+        extension = "jpg";
+      } else {
+        if (file.toLowerCase().includes("/certificates/") || file.toLowerCase().includes(".pdf")) {
           extension = "pdf";
-        } else if (file.toLowerCase().endsWith(".png")) {
+        } else if (file.toLowerCase().includes(".png")) {
           extension = "png";
         }
       }
 
+      console.log("[handleDownload] Derived extension:", extension);
       link.download = `certificate.${extension}`;
-
       document.body.appendChild(link);
-
       link.click();
-
       document.body.removeChild(link);
-
       window.URL.revokeObjectURL(url);
-
       toast.success("Download started");
-    } catch {
+    } catch (err) {
+      console.error("[handleDownload] Fetch execution failed with error:", err);
       toast("Opening file in new tab...");
       window.open(file, "_blank");
     }

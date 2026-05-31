@@ -5,7 +5,10 @@ import toast from "react-hot-toast";
 import { verifyCertificateApi } from "../services/api";
 
 export default function Verify() {
-  const [certId, setCertId] = useState("");
+  const [certId, setCertId] = useState(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get("id") || "";
+  });
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [scanOpen, setScanOpen] = useState(false);
@@ -41,6 +44,13 @@ export default function Verify() {
     setLoading(false);
   };
 
+  // AUTO VERIFY ON URL MOUNT
+  useEffect(() => {
+    if (certId) {
+      handleVerify(certId);
+    }
+  }, []);
+
   // QR SCANNER
   useEffect(() => {
     if (scanOpen) {
@@ -66,12 +76,40 @@ export default function Verify() {
   }, [scanOpen]);
 
   // DOWNLOAD
-  const handleDownload = () => {
+  const handleDownload = async () => {
     if (!result?.certificateUrl) return;
-    const link = document.createElement("a");
-    link.href = result.certificateUrl;
-    link.download = "certificate.jpg";
-    link.click();
+
+    let extension = "jpg";
+    try {
+      const urlObj = new URL(result.certificateUrl);
+      const pathname = urlObj.pathname;
+      const ext = pathname.split(".").pop()?.toLowerCase();
+      if (ext && ["jpg", "jpeg", "png", "pdf"].includes(ext)) {
+        extension = ext;
+      }
+    } catch (e) {
+      if (result.certificateUrl.toLowerCase().endsWith(".pdf") || result.certificateUrl.toLowerCase().includes(".pdf")) {
+        extension = "pdf";
+      } else if (result.certificateUrl.toLowerCase().endsWith(".png")) {
+        extension = "png";
+      }
+    }
+
+    try {
+      const response = await fetch(result.certificateUrl);
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = `certificate.${extension}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch {
+      window.open(result.certificateUrl, "_blank");
+    }
   };
 
   return (
@@ -192,11 +230,19 @@ export default function Verify() {
                       Certificate Preview
                     </p>
 
-                    <img
-                      src={result.certificateUrl}
-                      alt="certificate"
-                      className="rounded-lg shadow-sm"
-                    />
+                    {result.certificateUrl?.toLowerCase().includes(".pdf") ? (
+                      <iframe
+                        src={result.certificateUrl}
+                        title="certificate"
+                        className="rounded-lg shadow-sm w-full h-[400px] border border-gray-200 bg-white"
+                      />
+                    ) : (
+                      <img
+                        src={result.certificateUrl}
+                        alt="certificate"
+                        className="rounded-lg shadow-sm"
+                      />
+                    )}
                   </div>
                 </div>
               </div>
