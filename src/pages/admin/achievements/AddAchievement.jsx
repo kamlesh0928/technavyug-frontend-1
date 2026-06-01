@@ -45,8 +45,21 @@ export default function AddAchievement() {
       setForm({ ...form, featured: checked });
     }
     // INPUT
+    // INPUT
     else {
-      setForm({ ...form, [name]: value });
+      let newValue = value;
+
+      // Achievement Title -> only English letters and spaces
+      if (name === "title") {
+        newValue = value.replace(/[^a-zA-Z\s]/g, "");
+      }
+
+      // Organization -> only English letters and spaces
+      if (name === "organization") {
+        newValue = value.replace(/[^a-zA-Z\s]/g, "");
+      }
+
+      setForm({ ...form, [name]: newValue });
     }
   };
 
@@ -58,6 +71,11 @@ export default function AddAchievement() {
       return;
     }
 
+    if (!/^[A-Za-z\s]+$/.test(form.title)) {
+      toast.error("Title should contain only English letters");
+      return;
+    }
+
     if (!form.type) {
       toast.error("Please select achievement type");
       return;
@@ -65,6 +83,11 @@ export default function AddAchievement() {
 
     if (!form.organization.trim()) {
       toast.error("Organization is required");
+      return;
+    }
+
+    if (!/^[A-Za-z\s]+$/.test(form.organization)) {
+      toast.error("Organization should contain only English letters");
       return;
     }
 
