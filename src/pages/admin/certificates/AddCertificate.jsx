@@ -24,9 +24,19 @@ const AddCertificate = () => {
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
+    let newValue = e.target.value;
+
+    if (e.target.name === "title") {
+      newValue = e.target.value.replace(/[^a-zA-Z\s]/g, "");
+    }
+
+    if (e.target.name === "organization") {
+      newValue = e.target.value.replace(/[^a-zA-Z\s]/g, "");
+    }
+
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [e.target.name]: newValue,
     });
 
     setErrors({
@@ -87,8 +97,17 @@ const AddCertificate = () => {
       newErrors.title = "Certificate title is required";
     }
 
+    if (!/^[A-Za-z\s]+$/.test(formData.title)) {
+      newErrors.title = "Certificate title should contain only English letters";
+    }
+
     if (!formData.organization.trim()) {
       newErrors.organization = "Issuing organization is required";
+    }
+
+    if (!/^[A-Za-z\s]+$/.test(formData.organization)) {
+      newErrors.organization =
+        "Organization should contain only English letters";
     }
 
     if (!formData.category || formData.category === "Select Category") {
