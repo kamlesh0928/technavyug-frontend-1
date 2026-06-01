@@ -47,22 +47,44 @@ export default function AddUser() {
         setErrors((prev) => ({ ...prev, photo: "" }));
       }
     } else {
-      setForm({ ...form, [name]: value });
+      let newValue = value;
+
+      // Full Name -> only letters and spaces
+      if (name === "name") {
+        newValue = value.replace(/[^a-zA-Z\s]/g, "");
+      }
+
+      // Phone -> only numbers, max 10 digits
+      if (name === "phone") {
+        newValue = value.replace(/\D/g, "").slice(0, 10);
+      }
+
+      setForm({ ...form, [name]: newValue });
     }
   };
 
   const validate = () => {
     let newErrors = {};
 
-    if (!form.name.trim()) newErrors.name = "Name is required";
+    if (!form.name.trim()) {
+      newErrors.name = "Name is required";
+    } else if (!/^[A-Za-z\s]+$/.test(form.name)) {
+      newErrors.name = "Only letters are allowed";
+    }
 
-    if (!form.designation.trim())
+    if (!form.designation.trim()) {
       newErrors.designation = "Designation required";
+    }
 
-    if (!form.email.trim() || !/\S+@\S+\.\S+/.test(form.email))
+    if (!form.email.trim() || !/\S+@\S+\.\S+/.test(form.email)) {
       newErrors.email = "Valid email is required";
+    }
 
-    if (form.phone && form.phone.length < 10) newErrors.phone = "Invalid phone";
+    if (!form.phone.trim()) {
+      newErrors.phone = "Phone number is required";
+    } else if (!/^\d{10}$/.test(form.phone)) {
+      newErrors.phone = "Phone number must be 10 digits";
+    }
 
     setErrors(newErrors);
 
