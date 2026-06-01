@@ -6,17 +6,19 @@ import { toast } from "react-hot-toast";
 export default function EditUser() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { users, updateUser } = useUsers();
+  const { users, loading, updateUser } = useUsers();
 
-  const user = users.find((u) => String(u._id) === String(id) || String(u.id) === String(id));
+  const user = users.find(
+    (u) => String(u._id) === String(id) || String(u.id) === String(id),
+  );
 
   const [form, setForm] = useState({
-    name: user?.name || "",
+    name: user?.fullName || user?.name || "",
     designation: user?.designation || "",
     email: user?.email || "",
-    phone: user?.phone || "",
-    linkedin: user?.linkedin || "",
-    photo: user?.photo || null,
+    phone: user?.phoneNumber || user?.phone || "",
+    linkedin: user?.linkedinUrl || user?.linkedin || "",
+    photo: user?.profilePhoto || user?.photo || null,
   });
 
   const [preview, setPreview] = useState(user?.photo || null);
@@ -24,6 +26,19 @@ export default function EditUser() {
 
   console.log("URL id:", id);
   console.log("Users:", users);
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          padding: "40px",
+          fontSize: "20px",
+        }}
+      >
+        Loading user...
+      </div>
+    );
+  }
 
   if (!user) {
     return (
@@ -33,7 +48,7 @@ export default function EditUser() {
           fontSize: "20px",
         }}
       >
-        Loading user...
+        User not found
       </div>
     );
   }
@@ -50,20 +65,31 @@ export default function EditUser() {
 
       setForm({ ...form, photo: file });
     } else {
-      setForm({ ...form, [name]: value });
+      let newValue = value;
+      if (name === "phone") {
+        newValue = value.replace(/\D/g, "").slice(0, 10);
+      }
+
+      setForm({ ...form, [name]: newValue });
     }
   };
 
   const validate = () => {
     let newErrors = {};
 
-    if (!form.designation.trim())
+    if (!form.designation.trim()) {
       newErrors.designation = "Designation required";
+    }
 
-    if (!form.email.trim() || !/\S+@\S+\.\S+/.test(form.email))
+    if (!form.email.trim() || !/\S+@\S+\.\S+/.test(form.email)) {
       newErrors.email = "Valid email is required";
+    }
 
-    if (form.phone && form.phone.length < 10) newErrors.phone = "Invalid phone";
+    if (!form.phone.trim()) {
+      newErrors.phone = "Phone number is required";
+    } else if (!/^\d{10}$/.test(form.phone)) {
+      newErrors.phone = "Phone number must be 10 digits";
+    }
 
     setErrors(newErrors);
 
@@ -260,7 +286,15 @@ export default function EditUser() {
 }
 
 /* Input component */
-const Input = ({ name, value, onChange, placeholder, error, disabled,readOnly }) => (
+const Input = ({
+  name,
+  value,
+  onChange,
+  placeholder,
+  error,
+  disabled,
+  readOnly,
+}) => (
   <div
     style={{
       display: "flex",
