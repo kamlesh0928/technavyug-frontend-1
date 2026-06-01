@@ -57,6 +57,11 @@ export default function AddProject() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!form.title.trim()) {
+      toast.error("Project title is required");
+      return;
+    }
+
     if (!/^[A-Za-z\s]+$/.test(form.title)) {
       toast.error("Project title should contain only English letters");
       return;
