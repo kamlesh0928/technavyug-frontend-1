@@ -41,9 +41,15 @@ export default function AddProject() {
         setForm({ ...form, thumbnail: file });
       }
     } else {
+      let newValue = value;
+
+      if (name === "title") {
+        newValue = value.replace(/[^a-zA-Z\s]/g, "");
+      }
+
       setForm({
         ...form,
-        [name]: type === "checkbox" ? checked : value,
+        [name]: type === "checkbox" ? checked : newValue,
       });
     }
   };
@@ -51,8 +57,8 @@ export default function AddProject() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.title.trim()) {
-      toast.error("Project title is required");
+    if (!/^[A-Za-z\s]+$/.test(form.title)) {
+      toast.error("Project title should contain only English letters");
       return;
     }
 
@@ -93,7 +99,8 @@ export default function AddProject() {
 
     const payload = {
       ...form,
-      category: form.category === "Custom" ? form.customCategory : form.category,
+      category:
+        form.category === "Custom" ? form.customCategory : form.category,
       shortDescription: form.shortDesc,
       fullDescription: form.fullDesc,
       thumbnailImage: form.thumbnail,
@@ -147,6 +154,7 @@ export default function AddProject() {
 
               <input
                 name="title"
+                value={form.title}
                 placeholder="Enter title"
                 onChange={handleChange}
                 className="w-full mt-1 p-2 border rounded-lg"
