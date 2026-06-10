@@ -1,121 +1,111 @@
-// services/api.js — Centralized API helper for backend communication
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+import axios from "axios";
 
-// ─── helpers ────────────────────────────────────────────────
-const getToken = () => localStorage.getItem('token');
+const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
 
-const headers = (isJson = true) => {
-  const h = {};
-  if (isJson) h['Content-Type'] = 'application/json';
-  const token = getToken();
-  if (token) h['Authorization'] = `Bearer ${token}`;
-  return h;
-};
+const api = axios.create({
+  baseURL: API_BASE,
+  timeout: 30000,
+});
 
-const handleRes = async (res) => {
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message || 'Request failed');
-  return data;
-};
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
-// ─── AUTH ───────────────────────────────────────────────────
-export const loginAdmin = (body) =>
-  fetch(`${API_BASE}/auth/login`, { method: 'POST', headers: headers(), body: JSON.stringify(body) }).then(handleRes);
+api.interceptors.response.use(
+  (response) => response.data,
+  (error) => {
+    const message =
+      error.response?.data?.message || error.message || "Request failed";
+    throw new Error(message);
+  },
+);
 
-export const registerAdmin = (body) =>
-  fetch(`${API_BASE}/auth/register`, { method: 'POST', headers: headers(), body: JSON.stringify(body) }).then(handleRes);
+// AUTH
+export const loginAdmin = (body) => api.post("/auth/login", body);
 
-export const getMe = () =>
-  fetch(`${API_BASE}/auth/me`, { headers: headers() }).then(handleRes);
+export const registerAdmin = (body) => api.post("/auth/register", body);
+
+export const getMe = () => api.get("/auth/me");
 
 export const forgotPasswordApi = (body) =>
-  fetch(`${API_BASE}/auth/forgot-password`, { method: 'POST', headers: headers(), body: JSON.stringify(body) }).then(handleRes);
+  api.post("/auth/forgot-password", body);
 
 export const resetPasswordApi = (token, body) =>
-  fetch(`${API_BASE}/auth/reset-password/${token}`, { method: 'PUT', headers: headers(), body: JSON.stringify(body) }).then(handleRes);
+  api.put(`/auth/reset-password/${token}`, body);
 
-// ─── USERS ──────────────────────────────────────────────────
-export const fetchUsers = (search = '') =>
-  fetch(`${API_BASE}/users?limit=200${search ? `&search=${search}` : ''}`, { headers: headers() }).then(handleRes);
+// USERS
+export const fetchUsers = (search = "") =>
+  api.get(`/users?limit=200${search ? `&search=${search}` : ""}`);
 
-export const fetchUser = (id) =>
-  fetch(`${API_BASE}/users/${id}`, { headers: headers() }).then(handleRes);
+export const fetchUser = (id) => api.get(`/users/${id}`);
 
-export const createUser = (formData) =>
-  fetch(`${API_BASE}/users`, { method: 'POST', headers: { Authorization: `Bearer ${getToken()}` }, body: formData }).then(handleRes);
+export const createUser = (formData) => api.post("/users", formData);
 
-export const updateUser = (id, formData) =>
-  fetch(`${API_BASE}/users/${id}`, { method: 'PUT', headers: { Authorization: `Bearer ${getToken()}` }, body: formData }).then(handleRes);
+export const updateUser = (id, formData) => api.put(`/users/${id}`, formData);
 
-export const deleteUserApi = (id) =>
-  fetch(`${API_BASE}/users/${id}`, { method: 'DELETE', headers: headers() }).then(handleRes);
+export const deleteUserApi = (id) => api.delete(`/users/${id}`);
 
-// ─── ACHIEVEMENTS ───────────────────────────────────────────
-export const fetchAchievements = (search = '') =>
-  fetch(`${API_BASE}/achievements${search ? `?search=${search}` : ''}`, { headers: headers() }).then(handleRes);
+// ACHIEVEMENTS
+export const fetchAchievements = (search = "") =>
+  api.get(`/achievements${search ? `?search=${search}` : ""}`);
 
-export const fetchAchievement = (id) =>
-  fetch(`${API_BASE}/achievements/${id}`, { headers: headers() }).then(handleRes);
+export const fetchAchievement = (id) => api.get(`/achievements/${id}`);
 
 export const createAchievement = (formData) =>
-  fetch(`${API_BASE}/achievements`, { method: 'POST', headers: { Authorization: `Bearer ${getToken()}` }, body: formData }).then(handleRes);
+  api.post("/achievements", formData);
 
 export const updateAchievementApi = (id, formData) =>
-  fetch(`${API_BASE}/achievements/${id}`, { method: 'PUT', headers: { Authorization: `Bearer ${getToken()}` }, body: formData }).then(handleRes);
+  api.put(`/achievements/${id}`, formData);
 
-export const deleteAchievementApi = (id) =>
-  fetch(`${API_BASE}/achievements/${id}`, { method: 'DELETE', headers: headers() }).then(handleRes);
+export const deleteAchievementApi = (id) => api.delete(`/achievements/${id}`);
 
-// ─── PROJECTS ───────────────────────────────────────────────
-export const fetchProjects = (params = '') =>
-  fetch(`${API_BASE}/projects${params ? `?${params}` : ''}`, { headers: headers() }).then(handleRes);
+// PROJECTS
+export const fetchProjects = (params = "") =>
+  api.get(`/projects${params ? `?${params}` : ""}`);
 
-export const fetchProject = (id) =>
-  fetch(`${API_BASE}/projects/${id}`, { headers: headers() }).then(handleRes);
+export const fetchProject = (id) => api.get(`/projects/${id}`);
 
-export const createProject = (formData) =>
-  fetch(`${API_BASE}/projects`, { method: 'POST', headers: { Authorization: `Bearer ${getToken()}` }, body: formData }).then(handleRes);
+export const createProject = (formData) => api.post("/projects", formData);
 
 export const updateProjectApi = (id, formData) =>
-  fetch(`${API_BASE}/projects/${id}`, { method: 'PUT', headers: { Authorization: `Bearer ${getToken()}` }, body: formData }).then(handleRes);
+  api.put(`/projects/${id}`, formData);
 
-export const deleteProjectApi = (id) =>
-  fetch(`${API_BASE}/projects/${id}`, { method: 'DELETE', headers: headers() }).then(handleRes);
+export const deleteProjectApi = (id) => api.delete(`/projects/${id}`);
 
 export const duplicateProjectApi = (id) =>
-  fetch(`${API_BASE}/projects/${id}/duplicate`, { method: 'POST', headers: headers() }).then(handleRes);
+  api.post(`/projects/${id}/duplicate`);
 
-// ─── CERTIFICATES ───────────────────────────────────────────
-export const fetchCertificates = (search = '') =>
-  fetch(`${API_BASE}/certificates${search ? `?search=${search}` : ''}`, { headers: headers() }).then(handleRes);
+// CERTIFICATES
+export const fetchCertificates = (search = "") =>
+  api.get(`/certificates${search ? `?search=${search}` : ""}`);
 
-export const fetchCertificate = (id) =>
-  fetch(`${API_BASE}/certificates/${id}`, { headers: headers() }).then(handleRes);
+export const fetchCertificate = (id) => api.get(`/certificates/${id}`);
 
 export const createCertificate = (formData) =>
-  fetch(`${API_BASE}/certificates`, { method: 'POST', headers: { Authorization: `Bearer ${getToken()}` }, body: formData }).then(handleRes);
+  api.post("/certificates", formData);
 
 export const updateCertificateApi = (id, formData) =>
-  fetch(`${API_BASE}/certificates/${id}`, { method: 'PUT', headers: { Authorization: `Bearer ${getToken()}` }, body: formData }).then(handleRes);
+  api.put(`/certificates/${id}`, formData);
 
-export const deleteCertificateApi = (id) =>
-  fetch(`${API_BASE}/certificates/${id}`, { method: 'DELETE', headers: headers() }).then(handleRes);
+export const deleteCertificateApi = (id) => api.delete(`/certificates/${id}`);
 
 export const verifyCertificateApi = (certId) =>
-  fetch(`${API_BASE}/certificates/verify/${certId}`).then(handleRes);
+  api.get(`/certificates/verify/${certId}`);
 
-// ─── DASHBOARD ──────────────────────────────────────────────
-export const fetchDashboard = () =>
-  fetch(`${API_BASE}/dashboard`, { headers: headers() }).then(handleRes);
+// DASHBOARD
+export const fetchDashboard = () => api.get("/dashboard");
 
-// ─── AUDIT LOGS ─────────────────────────────────────────────
-export const fetchAuditLogs = (search = '') =>
-  fetch(`${API_BASE}/audit-logs${search ? `?search=${search}` : ''}`, { headers: headers() }).then(handleRes);
+// AUDIT LOGS
+export const fetchAuditLogs = (search = "") =>
+  api.get(`/audit-logs${search ? `?search=${search}` : ""}`);
 
-// ─── ACTIVITY ───────────────────────────────────────────────
+// ACTIVITY
 export const fetchActivity = (page = 1, limit = 10) =>
-  fetch(`${API_BASE}/activity?page=${page}&limit=${limit}`, { headers: headers() }).then(handleRes);
+  api.get(`/activity?page=${page}&limit=${limit}`);
 
-// ─── ANALYTICS ──────────────────────────────────────────────
-export const fetchAnalytics = () =>
-  fetch(`${API_BASE}/analytics`, { headers: headers() }).then(handleRes);
+// ANALYTICS
+export const fetchAnalytics = () => api.get("/analytics");

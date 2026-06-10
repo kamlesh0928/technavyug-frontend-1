@@ -17,13 +17,11 @@ import AdminLayout from "./layouts/AdminLayout";
 import ForgotPassword from "./pages/admin/ForgotPassword";
 import ResetPassword from "./pages/admin/ResetPassword";
 
-// Admin imports
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminProfile from "./pages/admin/AdminProfile";
 import Dashboard from "./pages/admin/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AddUser from "./pages/admin/users/AddUser";
-//import GenerateCertificate from "./pages/admin/certificates/GenerateCertificate";
 import Achievements from "./pages/admin/achievements/Achievements";
 import Users from "./pages/admin/users/Users";
 import UsersProvider from "./provider/UsersProvider";
@@ -64,8 +62,6 @@ function App() {
         <CertificatesProvider>
           <AchievementsProvider>
             <ProjectsProvider>
-              {" "}
-              {/* ADD THIS */}
               <CursorGlow />
               <Toaster
                 position="top-right"
@@ -78,7 +74,7 @@ function App() {
                 }}
               />
               <Routes>
-                {/* 🌍 Public Routes */}
+                {/* Public Routes */}
                 <Route path="/" element={<Home />} />
                 <Route path="/profile/:id" element={<Profile />} />
                 <Route path="/verify" element={<Verify />} />
@@ -97,7 +93,7 @@ function App() {
                 <Route path="/events-media" element={<EventsMedia />} />
                 <Route path="/blog/:id" element={<BlogDetails />} />
 
-                {/* 🔐 Admin Login */}
+                {/* Admin Login */}
                 <Route path={`${LOGIN_URL}`} element={<AdminLogin />} />
                 <Route
                   path={`${FORGOT_PASSWORD_URL}`}
@@ -108,7 +104,7 @@ function App() {
                   element={<ResetPassword />}
                 />
 
-                {/* 🔐 Admin Protected Routes */}
+                {/* Admin Protected Routes */}
                 <Route
                   path="/admin"
                   element={
@@ -143,8 +139,6 @@ function App() {
                     path="edit-certificate/:id"
                     element={<EditCertificate />}
                   />
-
-                  {/* <Route path="generate" element={<GenerateCertificate />} /> */}
 
                   <Route path="/admin/settings" element={<Settings />} />
                   <Route
